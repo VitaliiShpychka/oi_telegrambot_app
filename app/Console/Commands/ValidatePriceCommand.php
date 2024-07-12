@@ -26,6 +26,10 @@ class ValidatePriceCommand extends Command
      */
     public function handle()
     {
+        //1. витянути всі унікальні звязки валют з клієнтьсякиї підписок -> ['USD-BTC', 'USD-ETH', 'USD-ADA']
+        //2. пробігтись по кожній звязці валют і витянути з Binance API актуальну ціну
+        //3. кинути NewPriceEvent
+
         file_put_contents(storage_path('logs/prices.log'), 'Prices validated ' . Carbon::now()->format('y-m-d h-m-s') . PHP_EOL, FILE_APPEND);
     }
 

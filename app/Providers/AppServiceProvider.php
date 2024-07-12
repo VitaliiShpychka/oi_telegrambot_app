@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Events\NewPriceEvent;
-use App\Listeners\PriceCreateListener;
+use App\Listeners\SendNotifacationsOnNewPrices;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Event::listen(
             NewPriceEvent::class,
-            PriceCreateListener::class,
+            SendNotifacationsOnNewPrices::class,
         );
 
     }
