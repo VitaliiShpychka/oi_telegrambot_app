@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Services\BinanceService;
+use App\Services\TelegramService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
 
 class ValidatePriceCommand extends Command
 {
@@ -21,16 +22,42 @@ class ValidatePriceCommand extends Command
      */
     protected $description = 'Command description';
 
+    private $symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT'];
+
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(BinanceService $service, TelegramService $telegramService)
     {
         //1. витянути всі унікальні звязки валют з клієнтьсякиї підписок -> ['USD-BTC', 'USD-ETH', 'USD-ADA']
         //2. пробігтись по кожній звязці валют і витянути з Binance API актуальну ціну
         //3. кинути NewPriceEvent
 
-        file_put_contents(storage_path('logs/prices.log'), 'Prices validated ' . Carbon::now()->format('y-m-d h-m-s') . PHP_EOL, FILE_APPEND);
+        $last_messages = $telegramService->getUpdates();
+
+        $chat_ids = [];
+        foreach ($last_messages['result'] as $message) {
+            if(!in_array($message['message']['chat']['id'], $chat_ids)){
+                $chat_ids[] = $message['message']['chat']['id'];
+            }
+        }
+
+        foreach ($this->symbols as $symbol){
+            $price = $service->getCurrentPrice($symbol);
+            foreach ($chat_ids as $chat_id){
+                $telegramService->sendMessage($chat_id, $symbol . ' - ' . $price);
+            }
+        }
+
+//        foreach ($prices as $symbol => $newPrice) {
+//            $oldPrice = Cache::get($symbol);
+//
+//            if ($oldPrice && abs(($newPrice - $oldPrice) / $oldPrice) >= 0.05) {
+//                event(new PriceChanged($symbol, $oldPrice, $newPrice));
+//            }
+//
+//            Cache::put($symbol, $newPrice, now()->addMinutes(5));
+//        }
     }
 
 }

@@ -123,4 +123,5 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'telegram_bot_token' => env('TELEGRAM_BOT_TOKEN'),
 ];

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\BinanceRequest;
 use App\Http\Responses\TelegramResponse;
+use App\Services\BinanceService;
 use Illuminate\Http\Request;
 
 class BinanceController extends Controller
@@ -11,7 +11,7 @@ class BinanceController extends Controller
     protected $binanceRequest;
     protected $telegramResponse;
 
-    public function __construct(BinanceRequest $binanceRequest, TelegramResponse $telegramResponse)
+    public function __construct(BinanceService $binanceRequest, TelegramResponse $telegramResponse)
     {
         $this->binanceRequest = $binanceRequest;
         $this->telegramResponse = $telegramResponse;
