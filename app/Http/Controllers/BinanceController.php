@@ -2,12 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BinanceRequest;
+use App\Http\Responses\TelegramResponse;
 use Illuminate\Http\Request;
 
 class BinanceController extends Controller
 {
-    public function createMessage(Request $request)
-    {
+    protected $binanceRequest;
+    protected $telegramResponse;
 
+    public function __construct(BinanceRequest $binanceRequest, TelegramResponse $telegramResponse)
+    {
+        $this->binanceRequest = $binanceRequest;
+        $this->telegramResponse = $telegramResponse;
+    }
+
+    public function handle(Request $request)
+    {
+        $message = $request->input('message');
+        $chatId = $message['chat']['id'];
+        $text = $message['text'];
+
+        // Відправка повідомлення з кнопками
+        $keyboard = $this->telegramResponse->getInlineKeyboard();
+        $this->telegramResponse->sendMessage($chatId, "Виберіть криптовалюту:", $keyboard);
+    }
+
+    public function handleCallbackQuery(Request $request): void
+    {
+        $callbackQuery = $request->input('callback_query');
+        $chatId = $callbackQuery['message']['chat']['id'];
+        $data = $callbackQuery['data'];
+
+        $prices = $this->binanceRequest->getCoinPrices([$data]);
+        $responseText = $this->telegramResponse->formatPrices($prices);
+
+        $this->telegramResponse->sendMessage($chatId, $responseText);
     }
 }
