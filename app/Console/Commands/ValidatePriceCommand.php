@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Services\BinanceService;
 use App\Services\TelegramService;
 use Illuminate\Console\Command;
+use Ramsey\Collection\Collection;
 
 class ValidatePriceCommand extends Command
 {
@@ -24,6 +25,17 @@ class ValidatePriceCommand extends Command
 
     private $symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT'];
 
+    private $keyboard = [
+        [
+            ["text" => "BTCUSDT"],
+            ["text" => "ETHUSDT"]
+        ],
+        [
+            ["text" => "BNBUSDT"],
+            ["text" => "BTCUSDT"]
+        ]
+    ];
+
     /**
      * Execute the console command.
      */
@@ -33,19 +45,30 @@ class ValidatePriceCommand extends Command
         //2. пробігтись по кожній звязці валют і витянути з Binance API актуальну ціну
         //3. кинути NewPriceEvent
 
+        $replyMarkup = json_encode([
+            "keyboard" => $this->keyboard,
+            "resize_keyboard" => true,
+            "one_time_keyboard" => true
+        ]);
+
         $last_messages = $telegramService->getUpdates();
+        $sorted_data = collect($last_messages['result'])->sortByDesc('message.date')->toArray();
 
         $chat_ids = [];
-        foreach ($last_messages['result'] as $message) {
-            if(!in_array($message['message']['chat']['id'], $chat_ids)){
-                $chat_ids[] = $message['message']['chat']['id'];
-            }
-        }
-
-        foreach ($this->symbols as $symbol){
-            $price = $service->getCurrentPrice($symbol);
-            foreach ($chat_ids as $chat_id){
-                $telegramService->sendMessage($chat_id, $symbol . ' - ' . $price);
+        $send_button = [];
+        foreach ($sorted_data as $message) {
+            if(!in_array($message['message']['chat']['id'], $chat_ids) && !in_array($message['message']['chat']['id'], $send_button)) {
+                if ($message['message']['text'] === '/start' || $message['message']['text'] === '/menu') {
+                    $send_button[] = $message['message']['chat']['id'];
+                    $telegramService->sendMessageWithButtons(
+                        $message['message']['chat']['id'],
+                        'Choose currency:',
+                        $replyMarkup
+                    );
+                } else {
+                    $telegramService->sendMessage($message['message']['chat']['id'], $service->getCurrentPrice($message['message']['text']));
+                    $chat_ids[] = $message['message']['chat']['id'];
+                }
             }
         }
 

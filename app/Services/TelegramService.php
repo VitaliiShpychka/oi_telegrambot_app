@@ -36,6 +36,28 @@ class TelegramService
         return null;
     }
 
+    public function sendMessageWithButtons($chatId, $message, $buttons)
+    {
+        try {
+            $response = $this->client->post($this->apiUrl . 'sendMessage', [
+                'json' => [
+                    'chat_id' => $chatId,
+                    'text' => $message,
+                    'reply_markup' => $buttons
+                ]
+            ]);
+
+            if ($response->getStatusCode() === 200) {
+                return json_decode($response->getBody(), true);
+            }
+        } catch (\Exception $e) {
+            // Обробка помилок
+            return 'Error: ' . $e->getMessage();
+        }
+
+        return null;
+    }
+
     public function getUpdates()
     {
         try {
