@@ -2,44 +2,32 @@
 
 namespace App\Http\Responses;
 
-use App\Models\Symbol;
-use App\Models\User;
-use Illuminate\Contracts\Support\Responsable;
+use GuzzleHttp\Client;
 
-class TelegramResponse implements Responsable
+class TelegramResponse
 {
-//    public User $user;
-//    public Symbol $symbol;
-//    public function __construct(Symbol $symbol, User $user)
-//    {
-//        $this->user = $user;
-//        $this->symbol = $symbol;
-//    }
-//    public function toResponse($request): array
-//    {
-//        return[
-//            'price_start' =>$this->symbol->price_start,
-//            'price_last'=> $this->user->price_last,
-//            'time'=>$this->symbol->time
-//        ];
-//    }
-
-    protected $user;
+    protected $client;
     protected $telegramApiUrl;
 
     public function __construct()
     {
-        $this->user = new User();
+        $this->client = new Client();
         $this->telegramApiUrl = 'https://api.telegram.org/bot' . env('TELEGRAM_BOT_TOKEN') . '/';
     }
 
-    public function sendMessage($chatId, $text): void
+    public function sendMessage($chatId, $text, $keyboard = null)
     {
-        $this->user->post($this->telegramApiUrl . 'sendMessage', [
-            'json' => [
-                'chat_id' => $chatId,
-                'text' => $text
-            ]
+        $params = [
+            'chat_id' => $chatId,
+            'text' => $text
+        ];
+
+        if ($keyboard) {
+            $params['reply_markup'] = json_encode($keyboard);
+        }
+
+        $this->client->post($this->telegramApiUrl . 'sendMessage', [
+            'json' => $params
         ]);
     }
 

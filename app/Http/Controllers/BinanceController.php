@@ -28,13 +28,13 @@ class BinanceController extends Controller
         $this->telegramResponse->sendMessage($chatId, "Виберіть криптовалюту:", $keyboard);
     }
 
-    public function handleCallbackQuery(Request $request): void
+    public function handleCallbackQuery(BinanceService $service): void
     {
         $callbackQuery = $request->input('callback_query');
         $chatId = $callbackQuery['message']['chat']['id'];
         $data = $callbackQuery['data'];
 
-        $prices = $this->binanceRequest->getCoinPrices([$data]);
+        $prices = $this->binanceRequest->getCurrentPrice([$data]);
         $responseText = $this->telegramResponse->formatPrices($prices);
 
         $this->telegramResponse->sendMessage($chatId, $responseText);
