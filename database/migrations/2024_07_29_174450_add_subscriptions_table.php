@@ -6,13 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    //['symbol', 'chat_id'];
+
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('symbols', function (Blueprint $table) {
+        Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
+            $table->string('symbol');
+            $table->string('chat_id');
             $table->timestamps();
         });
     }
@@ -22,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('symbols');
+        Schema::dropIfExists('subscriptions');
     }
 };

@@ -6,17 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    //['chat_id', 'message_id', 'updated_id', 'text'];
 
-    //['price', 'symbol']
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('prices', function (Blueprint $table) {
+        Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->string('symbol');
-            $table->decimal('price', 10, 2);
+            $table->integer('chat_id');
+            $table->integer('message_id');
+            $table->integer('updated_id');
+            $table->string('text');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('prices');
+        Schema::dropIfExists('messages');
     }
 };

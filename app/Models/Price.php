@@ -9,10 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Price extends Model
 {
     use HasFactory;
-    protected $fillable = ['price', 'symbol_id'];
 
-    public function symbol(): BelongsTo
-    {
-        return $this->belongsTo(Symbol::class);
-    }
+    protected $fillable = ['price', 'symbol'];
 }

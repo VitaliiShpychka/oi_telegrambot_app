@@ -6,19 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
-    //['price', 'symbol']
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('prices', function (Blueprint $table) {
-            $table->id();
-            $table->string('symbol');
-            $table->decimal('price', 10, 2);
-            $table->timestamps();
-        });
+        //
     }
 
     /**
@@ -26,6 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('prices');
+        //
     }
 };

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Events\PriceChanged;
 use App\Services\BinanceService;
+use App\Services\MessagesService;
 use App\Services\TelegramService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
@@ -29,21 +30,20 @@ class ValidatePriceCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(BinanceService $service, TelegramService $telegramService)
+    public function handle(BinanceService $service, TelegramService $telegramService, MessagesService $messagesService)
     {
         //1. витянути всі унікальні звязки валют з клієнтьсякиї підписок -> ['USD-BTC', 'USD-ETH', 'USD-ADA']
         //2. пробігтись по кожній звязці валют і витянути з Binance API актуальну ціну
         //3. кинути NewPriceEvent
 
-        $last_messages = $telegramService->getUpdates();
-        print_r($last_messages);
+        $updated_id = $messagesService->getLastUpdateId();
+        $last_messages = $telegramService->getUpdates($updated_id);
 
-        $chat_ids = [];
-        foreach ($last_messages['result'] as $message) {
-            if(!in_array($message['message']['chat']['id'], $chat_ids)){
-                $chat_ids[] = $message['message']['chat']['id'];
-            }
-        }
+        //create new messages
+        $messagesService->createNewMessages($last_messages['result']);
+
+        //get chat ids with subscriptions
+        $chat_ids = $messagesService->getChatsWithSubscriptions($this->symbols);
 
         foreach ($this->symbols as $symbol){
             $price = $service->getCurrentPrice($symbol);
