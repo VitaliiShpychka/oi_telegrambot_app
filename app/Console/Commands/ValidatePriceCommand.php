@@ -2,9 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Events\PriceChanged;
 use App\Services\BinanceService;
 use App\Services\TelegramService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 
 class ValidatePriceCommand extends Command
 {
@@ -34,6 +36,7 @@ class ValidatePriceCommand extends Command
         //3. кинути NewPriceEvent
 
         $last_messages = $telegramService->getUpdates();
+        print_r($last_messages);
 
         $chat_ids = [];
         foreach ($last_messages['result'] as $message) {

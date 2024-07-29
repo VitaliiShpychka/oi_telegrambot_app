@@ -47,7 +47,8 @@ class TelegramResponse
                 [
                     ['text' => 'BTC', 'callback_data' => 'BTCUSDT'],
                     ['text' => 'ETH', 'callback_data' => 'ETHUSDT'],
-                    ['text' => 'BNB', 'callback_data' => 'BNBUSDT']
+                    ['text' => 'BNB', 'callback_data' => 'BNBUSDT'],
+                    ['text' => 'LTC', 'callback_data' => 'LTCUSDT']
                 ]
             ]
         ];
