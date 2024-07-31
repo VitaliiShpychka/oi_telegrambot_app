@@ -43,7 +43,7 @@ class TelegramService
                 'json' => [
                     'chat_id' => $chatId,
                     'text' => $message,
-                    'reply_markup' => $buttons
+                    //'reply_markup' => $buttons
                 ]
             ]);
 

@@ -18,7 +18,8 @@ class MessagesService
     }
 
     public function getLastUpdateId() {
-        return Message::max('updated_id');
+        $lastMessage = Message::max('updated_id');
+        return $lastMessage;
     }
 
     public function getChatsWithSubscriptions(array $symbols) {

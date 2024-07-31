@@ -25,7 +25,7 @@ class ValidatePriceCommand extends Command
      */
     protected $description = 'Command description';
 
-    private $symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT'];
+    private $symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'LTCUSDT'];
 
     /**
      * Execute the console command.
@@ -45,12 +45,15 @@ class ValidatePriceCommand extends Command
         //get chat ids with subscriptions
         $chat_ids = $messagesService->getChatsWithSubscriptions($this->symbols);
 
+
         foreach ($this->symbols as $symbol){
             $price = $service->getCurrentPrice($symbol);
             foreach ($chat_ids as $chat_id){
                 $telegramService->sendMessage($chat_id, $symbol . ' - ' . $price);
             }
         }
+
+
 
 //        foreach ($prices as $symbol => $newPrice) {
 //            $oldPrice = Cache::get($symbol);
