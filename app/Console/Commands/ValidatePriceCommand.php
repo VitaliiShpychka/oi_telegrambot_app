@@ -37,6 +37,7 @@ class ValidatePriceCommand extends Command
         //3. кинути NewPriceEvent
 
         $updated_id = $messagesService->getLastUpdateId();
+        $updated_id = $updated_id ?? 0;
         $last_messages = $telegramService->getUpdates($updated_id);
 
         //create new messages
@@ -52,18 +53,6 @@ class ValidatePriceCommand extends Command
                 $telegramService->sendMessage($chat_id, $symbol . ' - ' . $price);
             }
         }
-
-
-
-//        foreach ($prices as $symbol => $newPrice) {
-//            $oldPrice = Cache::get($symbol);
-//
-//            if ($oldPrice && abs(($newPrice - $oldPrice) / $oldPrice) >= 0.05) {
-//                event(new PriceChanged($symbol, $oldPrice, $newPrice));
-//            }
-//
-//            Cache::put($symbol, $newPrice, now()->addMinutes(5));
-//        }
     }
 
 }
