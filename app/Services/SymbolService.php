@@ -4,9 +4,5 @@ namespace App\Services;
 
 class SymbolService
 {
-    public function create(array $data)
-    {
-
-    }
-
+    public static array $SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'LTCUSDT'];
 }
