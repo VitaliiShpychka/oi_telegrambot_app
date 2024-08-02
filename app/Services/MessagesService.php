@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Message;
+use Illuminate\Support\Facades\DB;
 
 class MessagesService
 {
@@ -23,7 +24,7 @@ class MessagesService
     }
 
     public function getChatsWithSubscriptions(array $symbols) {
-        return Message::whereIn('text', $symbols)->pluck('chat_id')->unique()->toArray();
+        return DB::table('messages')->whereIn('text', $symbols)->groupBy(['text', 'chat_id'])->get(['chat_id', 'text'])->toArray();
     }
 
     public function checkIfSubscription(string $text): string {

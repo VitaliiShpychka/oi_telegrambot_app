@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Events\PriceChanged;
 use App\Services\BinanceService;
 use App\Services\MessagesService;
+use App\Services\PricesService;
 use App\Services\SymbolService;
 use App\Services\TelegramService;
 use Illuminate\Console\Command;
@@ -29,7 +30,7 @@ class ValidatePriceCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(BinanceService $service, TelegramService $telegramService, MessagesService $messagesService)
+    public function handle(BinanceService $service, TelegramService $telegramService, MessagesService $messagesService, PricesService $pricesService)
     {
         //1. витянути всі унікальні звязки валют з клієнтьсякиї підписок -> ['USD-BTC', 'USD-ETH', 'USD-ADA']
         //2. пробігтись по кожній звязці валют і витянути з Binance API актуальну ціну
@@ -42,18 +43,18 @@ class ValidatePriceCommand extends Command
         $messagesService->createNewMessages($last_messages['result']);
 
         //get chat ids with subscriptions
-        $chat_ids = $messagesService->getChatsWithSubscriptions(SymbolService::$SYMBOLS);
-
-
-        $textMessage = $rate_list->checkIfSubscription($updated_id);
+        $subsriptions = $messagesService->getChatsWithSubscriptions(SymbolService::$SYMBOLS);
         foreach (SymbolService::$SYMBOLS as $symbol){
             $price = $service->getCurrentPrice($symbol);
-            if($symbol = $textMessage){
-                foreach ($chat_ids as $chat_id){
-                    $telegramService->sendMessage($chat_id, $symbol . ' - ' . $price);
+
+            $percentage = $pricesService->compareWithLastPrice($symbol, $price);
+            $pricesService->savePrice($symbol, $price);
+
+            foreach ($subsriptions as $subsription){
+                if($subsription->text == $symbol && abs($percentage) > 0.01){
+                    $telegramService->sendMessage($subsription->chat_id, $symbol . ' - ' . $price);
                 }
             }
-
         }
     }
 }

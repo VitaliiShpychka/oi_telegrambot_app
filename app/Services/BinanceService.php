@@ -25,7 +25,7 @@ class BinanceService
 
             if ($response->getStatusCode() === 200) {
                 $data = json_decode($response->getBody(), true);
-                return $data['price'];
+                return number_format($data['price'], 5, '.', '');
             }
         } catch (\Exception $e) {
             return 'Error: ' . $e->getMessage();

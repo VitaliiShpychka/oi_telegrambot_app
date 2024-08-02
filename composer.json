@@ -10,7 +10,8 @@
         "irazasyed/telegram-bot-sdk": "^3.14",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
-        "telegram-bot/api": "^2.5"
+        "telegram-bot/api": "^2.5",
+        "ext-bcmath": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
