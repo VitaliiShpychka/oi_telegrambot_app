@@ -45,11 +45,15 @@ class ValidatePriceCommand extends Command
         $chat_ids = $messagesService->getChatsWithSubscriptions(SymbolService::$SYMBOLS);
 
 
+        $textMessage = $rate_list->checkIfSubscription($updated_id);
         foreach (SymbolService::$SYMBOLS as $symbol){
             $price = $service->getCurrentPrice($symbol);
-            foreach ($chat_ids as $chat_id){
-                $telegramService->sendMessage($chat_id, $symbol . ' - ' . $price);
+            if($symbol = $textMessage){
+                foreach ($chat_ids as $chat_id){
+                    $telegramService->sendMessage($chat_id, $symbol . ' - ' . $price);
+                }
             }
+
         }
     }
 }
